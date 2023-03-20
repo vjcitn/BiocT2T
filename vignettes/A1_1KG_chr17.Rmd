@@ -1,0 +1,107 @@
+---
+title: "A1 Acquiring 3202 1KG genotypes from chr17 with T2T reference"
+author: "Vincent J. Carey, stvjc at channing.harvard.edu"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{A1 Acquiring 3202 1KG genotypes from chr17 with T2T reference}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document:
+    highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
+---
+
+# Objectives
+
+This package demonstrates the use of genotypes obtained via calls
+against the T2T reference genome.  Our objectives are:
+
+- acquire and make the genotypes accessible to R/Bioconductor
+- bind relevant sample-level metadata to the resource
+- acquire associated RNA-seq assay outputs for a subset of the genotyped samples
+- perform a series of GWAS to identify expression-based quantitative trait loci (eQTL)
+
+# Acquiring 3202 human genotypes called against the T2T reference
+
+## The cloud resource; environment variable setting
+
+We have made a large resource
+available in the hail.is MatrixTable format.  This can be retrieved
+without egress charges using the code in this vignette.  A convenient
+approach uses rclone, as described in the appendix.
+The zipped MatrixTable folders are at
+
+```
+https://mghp.osn.xsede.org/bir190004-bucket01/Bioc1KGt2t/t17.zip
+```
+
+This 42GB file should be unzipped in a folder to which the environment variable `HAIL_T2T_CHR17` will
+point.  
+
+## Initial checks of the resource
+
+Ensure that `Sys.getenv("HAIL_T2T_CHR17")` returns the location of the unzipped MatrixTable resource.
+
+```{r chk1}
+library(BiocHail)
+hl = hail_init()
+
+# NB the following two commands are now encapsulated in the rg_update function
+nn <- hl$get_reference('GRCh38')
+nn <- nn$read(system.file("json/t2tAnVIL.json", package="BiocHail"))
+# updates the hail reference genome
+bigloc = Sys.getenv("HAIL_T2T_CHR17")
+if (nchar(bigloc)>0) {
+  mt17 <- hl$read_matrix_table(Sys.getenv("HAIL_T2T_CHR17"))
+  mt17$count()
+}
+```
+
+# Population stratification assessment via PCA
+
+
+# pcastuff = hl$hwe_normalized_pca(mt17$GT)
+
+
+
+# Appendix: Using rclone with docker to get the chr17 data
+
+It can be painful to install and configure rclone.  We use
+a docker container.  Let RC_DATADIR be an environment variable
+evaluating to an available folder.
+
+Also, place the text file with contents
+```
+[osn]
+type = s3
+provider = AWS
+endpoint = https://mghp.osn.xsede.org
+acl = public
+no_check_bucket = true
+```
+in a file `rclone.conf` in a folder pointed to by the environment
+variable `RC_CONFDIR`.
+
+
+Then the following
+
+```
+docker run -v $RC_DATADIR:/data -v $RC_CONFDIR:/config/rclone -t rclone/rclone:latest ls osn:/bir190004-bucket01/Bioc1KGt2t
+```
+
+will list the files with 1KG samples genotyped against the T2T reference.
+
+
+
+Use the rclone `copyto` command to obtain a local copy of the zip file `t17.zip`
+in the folder pointed to by `$RC_DATADIR`:
+
+```
+docker run -v $RC_DATADIR:/data -v $RC_CONFDIR:/config/rclone -t rclone/rclone:latest copyto osn:/bir190004-bucket01/Bioc1KGt2t/t17.zip ./t17.zip
+```
+This file should be unzipped in a folder to which the environment variable `HAIL_T2T_CHR17` will
+point.
+
