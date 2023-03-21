@@ -63,7 +63,9 @@ if (nchar(bigloc)>0) {
 # Population stratification assessment via PCA
 
 
-# pcastuff = hl$hwe_normalized_pca(mt17$GT)
+```{r trypc}
+pcastuff = hl$hwe_normalized_pca(mt17$sample_rows(.001)$GT)
+```
 
 
 
