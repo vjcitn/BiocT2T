@@ -1,7 +1,7 @@
 Package: BiocT2T
 Date: 2022-10-01
 Title: Explore the T2T reference genome with Bioconductor
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     c(person(
         "Vincent", "Carey", role = c("aut", "cre"),
