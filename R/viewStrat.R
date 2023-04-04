@@ -5,10 +5,11 @@
 #' @param superpop character(1)
 #' @param selectedPCs numeric(), values typically drawn from 1:10
 #' @param dropNAs logical(1) defaults to TRUE
+#' @param superOnly logical(1) defaults to FALSE; if TRUE, do not limit to one superpopulation
 #' @note Population and SuperPopulation definitions are at `https://www.internationalgenome.org/data-portal/population`,
 #' mapping from sample to population/superpopulation is available via `BiocHail::path_1kg_annotations`.
 #' 
-viewStrat1KG = function(pcs, selectedPCs=1:4, superpop="AFR", dropNAs=TRUE) {
+viewStrat1KG = function(pcs, selectedPCs=1:4, superpop="AFR", superOnly=FALSE, dropNAs=TRUE) {
 ## ----getanno------------------------------------------------------------------
   npc = colnames(pcs)
   touse = paste0("PC", selectedPCs)
@@ -28,8 +29,10 @@ viewStrat1KG = function(pcs, selectedPCs=1:4, superpop="AFR", dropNAs=TRUE) {
   lj = left_join(pcdf, md, by="Sample")
   if (dropNAs) lj = na.omit(lj)
   lj = dplyr::select(lj, all_of(c(touse, "SuperPopulation", "Population")))
-  lj = dplyr::filter(lj, SuperPopulation==superpop)
-  lj = dplyr::select(lj, -SuperPopulation)
+  if (!superOnly) {
+     lj = dplyr::filter(lj, SuperPopulation==superpop)
+     lj = dplyr::select(lj, -SuperPopulation)
+     }
   list(lj=lj) #, pl=ggpairs(lj, aes(colour=Population)))
 }
 
@@ -108,3 +111,34 @@ stratapp = function() {
   ) # end ui
  shinyApp(ui=ui, server=server)
 }
+
+#' static visualization of PCA pairs
+#' @param pcmat matrix with columns PC1...PCn
+#' @param pcinds numeric vector with suffixes from colnames(pcmat) to select for visualization
+#' @param superpop character(1) three letter superpopulation code, see `data(igsr_pops)`
+#' @param GGally logical(1) if TRUE, use `GGally::ggpairs` to visualize, otherwise `pairs()`
+#' @param superOnly logical(1) defaults to FALSE; if TRUE, do not limit to one superpopulation
+#' @return Side effects of plotting with either `pairs` or `GGally`
+#' @examples
+#' data(pc_190kloci)
+#' strat2d(pc_190kloci)
+#' @export
+strat2d = function(pcmat, pcinds=5:8, superpop="AFR", GGally=FALSE, superOnly=FALSE) {
+ dat = viewStrat1KG(pcmat, pcinds, superpop=superpop, superOnly=superOnly)
+ dpop = dat[[1]]$Population
+ if (superOnly) dpop = dat[[1]]$SuperPopulation
+ if (!GGally) {
+   dat = as.data.frame(dat[[1]])
+   dat = dplyr::select(dat, -Population)
+   if (superOnly) dat = dplyr::select(dat, -SuperPopulation)
+   pairs(dat, pch=19, cex=.4, col=factor(dpop))
+   }
+ else {
+   if (!superOnly) GGally::ggpairs(data.frame(dat[[1]]), aes(colour=Population))
+   else {
+     dat = data.frame(dat[[1]])
+     dat = dplyr::select(dat, -Population)
+     GGally::ggpairs(dat, aes(colour=SuperPopulation))
+     }
+  }
+ }

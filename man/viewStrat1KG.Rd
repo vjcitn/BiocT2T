@@ -4,7 +4,13 @@
 \alias{viewStrat1KG}
 \title{visualize PCA colored by populations for a selected SuperPopulation}
 \usage{
-viewStrat1KG(pcs, selectedPCs = 1:4, superpop = "AFR", dropNAs = TRUE)
+viewStrat1KG(
+  pcs,
+  selectedPCs = 1:4,
+  superpop = "AFR",
+  superOnly = FALSE,
+  dropNAs = TRUE
+)
 }
 \arguments{
 \item{pcs}{matrix of principal components, assumed to have colnames PC[1,...] typically PC1-PC10}
@@ -12,6 +18,8 @@ viewStrat1KG(pcs, selectedPCs = 1:4, superpop = "AFR", dropNAs = TRUE)
 \item{selectedPCs}{numeric(), values typically drawn from 1:10}
 
 \item{superpop}{character(1)}
+
+\item{superOnly}{logical(1) defaults to FALSE; if TRUE, do not limit to one superpopulation}
 
 \item{dropNAs}{logical(1) defaults to TRUE}
 }

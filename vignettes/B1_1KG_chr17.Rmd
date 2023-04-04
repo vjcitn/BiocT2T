@@ -1,10 +1,10 @@
 ---
-title: "A1 Acquiring 3202 1KG genotypes from chr17 with T2T reference"
+title: "B1 Acquiring and exploring 3202 1KG genotypes from chr17 with T2T reference"
 author: "Vincent J. Carey, stvjc at channing.harvard.edu"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{A1 Acquiring 3202 1KG genotypes from chr17 with T2T reference}
+  %\VignetteIndexEntry{B1 Acquiring and exploring 3202 1KG genotypes from chr17 with T2T reference}
   %\VignetteEncoding{UTF-8}
 output:
   BiocStyle::html_document:
@@ -63,6 +63,7 @@ if (nchar(bigloc)>0) {
 
 # Population stratification assessment via PCA
 
+## PCs in R matrices
 
 The following computation takes close to 30 minutes with
 64 cores.  We saved the loadings in `pc_990kloci`.
@@ -73,19 +74,45 @@ pcastuff = hl$hwe_normalized_pca(mt17$sample_rows(.25)$GT)
 data(pc_990kloci)
 pc_990kloci[1:3,1:4]
 ```
+PCA has also been performed with samples of 3000 and 190000 loci.
 
-We expect these PCs to provide information on population of origin.
-Metadata about sample origins is available in BiocHail.
+## Annotation of samples
 
-```{r getanno}
-anp = path_1kg_annotations()
-md = read.delim(anp, sep="\t")
-# library(dplyr) # Available via Depends
-pcdf = data.frame(pc_990kloci)
-pcdf$Sample = rownames(pcdf)
-lj = left_join(md, pcdf, by="Sample")
-dim(lj)
+The populations of origin of the 3202 samples are tabulated in `igsr_pops`.
+```{r lkpop}
+data(igsr_pops)
+table(igsr_pops$`Superpopulation code`)
+igsr_pops |> dplyr::filter(`Superpopulation code` %in% c("AFR", "SAS")) |> 
+    dplyr::select(`Superpopulation name`, `Population code`, `Population name`) |>
+    dplyr::arrange(desc(`Superpopulation name`))
 ```
+Latitude and longitude are also available for the population centers from which
+samples were collected.
+
+## Visualizing genetic variation
+
+We have several approaches to static visualization of PCs.
+
+A pairs plot for selected PCs for superpopulation visualization
+based on 190000 loci can be quickly produced.
+```{r view1}
+data(pc_190kloci)
+strat2d(pc_190kloci, 1:4, superOnly=TRUE)
+```
+
+A more carefully annotated view is produced using GGally::ggpairs:
+```{r view2, message=FALSE}
+strat2d(pc_190kloci, 1:4, superOnly=TRUE, GGally=TRUE)
+```
+
+## Interactive visualization
+
+The `stratapp` function facilitates simultaneous investigations of
+
+- subpopulations within a population
+- different levels of resolution of genetic detail (size of SNP sample)
+- specific PCs to use for discrimination
+
 
 
 

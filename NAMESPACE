@@ -2,6 +2,7 @@
 
 export(getGeuvRNA)
 export(install_early_t2t_txdb)
+export(strat2d)
 export(stratapp)
 import(shiny)
 importFrom(GGally,ggpairs)
