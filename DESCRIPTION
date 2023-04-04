@@ -1,5 +1,5 @@
 Package: BiocT2T
-Date: 2022-10-01
+Date: 2023-04-01
 Title: Explore the T2T reference genome with Bioconductor
 Version: 0.0.2
 Authors@R: 
@@ -14,8 +14,10 @@ Description: Bioconductor has several resources for helping
 	This package helps explore these opportunities.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 3.6), dplyr, BiocHail
-Suggests: knitr, testthat, BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0
+Depends: R (>= 4.2), dplyr, BiocHail, ggplot2
+Imports: GGally, shiny, BiocFileCache, DT
+Suggests: knitr, testthat, BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0,
+	SummarizedExperiment
 VignetteBuilder: knitr
 biocViews: Infrastructure
 RoxygenNote: 7.2.3

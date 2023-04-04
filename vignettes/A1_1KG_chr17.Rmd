@@ -45,7 +45,8 @@ point.
 
 Ensure that `Sys.getenv("HAIL_T2T_CHR17")` returns the location of the unzipped MatrixTable resource.
 
-```{r chk1}
+```{r chk1,message=FALSE}
+library(BiocT2T)
 library(BiocHail)
 hl = hail_init()
 
@@ -63,9 +64,29 @@ if (nchar(bigloc)>0) {
 # Population stratification assessment via PCA
 
 
-```{r trypc}
-pcastuff = hl$hwe_normalized_pca(mt17$sample_rows(.001)$GT)
+The following computation takes close to 30 minutes with
+64 cores.  We saved the loadings in `pc_990kloci`.
+```{r trypc, eval=FALSE}
+pcastuff = hl$hwe_normalized_pca(mt17$sample_rows(.25)$GT)
 ```
+```{r lkpcs}
+data(pc_990kloci)
+pc_990kloci[1:3,1:4]
+```
+
+We expect these PCs to provide information on population of origin.
+Metadata about sample origins is available in BiocHail.
+
+```{r getanno}
+anp = path_1kg_annotations()
+md = read.delim(anp, sep="\t")
+# library(dplyr) # Available via Depends
+pcdf = data.frame(pc_990kloci)
+pcdf$Sample = rownames(pcdf)
+lj = left_join(md, pcdf, by="Sample")
+dim(lj)
+```
+
 
 
 

@@ -10,7 +10,7 @@ getGeuvRNA()
 obtain a summarized experiment with GEUVADIS (Coriell) RNA-seq quantifications
 }
 \examples{
-requireNamespace(SummarizedExperiment)
+requireNamespace("SummarizedExperiment")
 gg = getGeuvRNA()
 gg
 SummarizedExperiment::assay(gg[1:4,1:5])

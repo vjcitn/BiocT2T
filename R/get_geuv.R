@@ -3,7 +3,7 @@
     entity, folder = "BiocScviR",
     prefix = "https://mghp.osn.xsede.org/bir190004-bucket01/",
     ca = BiocFileCache::BiocFileCache()) {
-  pa <- bfcquery(ca, entity)
+  pa <- BiocFileCache::bfcquery(ca, entity)
   if (nrow(pa) > 1) {
     stop(sprintf(
       "%s has multiple instances in cache, please inspect.",
@@ -15,12 +15,12 @@
   target <- paste0(prefix, folder, "/", entity)
   tf <- tempfile(entity) # for metadata
   download.file(target, tf)
-  bfcrpath(ca, tf, action = "copy")
+  BiocFileCache::bfcrpath(ca, tf, action = "copy")
 }
 
 #' obtain a summarized experiment with GEUVADIS (Coriell) RNA-seq quantifications
 #' @examples
-#' requireNamespace(SummarizedExperiment)
+#' requireNamespace("SummarizedExperiment")
 #' gg = getGeuvRNA()
 #' gg
 #' SummarizedExperiment::assay(gg[1:4,1:5])

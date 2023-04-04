@@ -23,3 +23,9 @@
 #' head(pc_990kloci)
 "pc_990kloci"
 
+#' table with metadata on populations for IGSR
+#' docType data
+#' @examples
+#' data(igsr_pops)
+#' head(igsr_pops)
+"igsr_pops"
