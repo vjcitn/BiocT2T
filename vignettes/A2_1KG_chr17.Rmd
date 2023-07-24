@@ -1,10 +1,10 @@
 ---
-title: "A1 Acquiring 3202 1KG genotypes from chr17 with T2T reference"
+title: "A2 Acquiring 3202 1KG genotypes from chr17 with T2T reference"
 author: "Vincent J. Carey, stvjc at channing.harvard.edu"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{A1 Acquiring 3202 1KG genotypes from chr17 with T2T reference}
+  %\VignetteIndexEntry{A2 Acquiring 3202 1KG genotypes from chr17 with T2T reference}
   %\VignetteEncoding{UTF-8}
 output:
   BiocStyle::html_document:

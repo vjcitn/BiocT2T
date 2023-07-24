@@ -1,0 +1,67 @@
+---
+title: "A1 Basic Bioconductor resources for working with the T2T reference genome"
+author: "Vincent J. Carey, stvjc at channing.harvard.edu"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{A1 Basic Bioconductor resources for working with the T2T reference genome}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document:
+    highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
+---
+
+# Objectives
+
+This package demonstrates the use of genotypes obtained via calls
+against the T2T reference genome.  Our objectives are:
+
+- acquire and make the genotypes accessible to R/Bioconductor
+- bind relevant sample-level metadata to the resource
+- acquire associated RNA-seq assay outputs for a subset of the genotyped samples
+- perform a series of GWAS to identify expression-based quantitative trait loci (eQTL)
+
+# The reference genomic sequence
+
+## GRCh38
+
+```{r lkref,message=FALSE}
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+seqinfo(BSgenome.Hsapiens.NCBI.GRCh38)
+BSgenome.Hsapiens.NCBI.GRCh38::Hsapiens
+hs38 = BSgenome.Hsapiens.NCBI.GRCh38
+hs38$`1`
+```
+
+## T2T
+
+```{r lkref2,message=FALSE}
+library(BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0)
+seqinfo(BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0)
+BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0::Hsapiens
+hst2t = BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0
+hst2t$`1`
+```
+
+18 million non-called positions in GRCh38 are now
+called.
+
+```{r lkalp}
+alphabetFrequency(hst2t$`1`)
+alphabetFrequency(hs38$`1`)
+```
+
+# Genes and transcripts
+
+```{r getg,message=FALSE}
+BiocT2T::install_early_t2t_txdb()
+library(TxDb.Hsapiens.NCBI.CHM13v2)
+TxDb.Hsapiens.NCBI.CHM13v2
+txdb = TxDb.Hsapiens.NCBI.CHM13v2
+genes(txdb)
+length(transcripts(txdb))
+length(exons(txdb))
+```
